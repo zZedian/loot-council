@@ -258,23 +258,26 @@ function renderStatusList(d){
   ).join('');
 }
 
+let sessionItems=[];
+
 function initVoteScreen(d){
+  sessionItems=d.items;
   if(myName&&d.votes&&d.votes[myName]){showDone();return;}
   if(!myName){
     $('name-picker').style.display='block';
     $('vote-form').style.display='none';
     const avail=d.participants.filter(p=>!(d.votes&&d.votes[p]));
     $('name-opts').innerHTML=avail.length
-      ?avail.map(p=>`<button class="nopt" onclick="selectName('${p}',${JSON.stringify(d.items)})">${p}</button>`).join('')
+      ?avail.map(p=>`<button class="nopt" onclick="selectName('${p.replace(/'/g,"\\'")}')">${p}</button>`).join('')
       :'<p style="color:var(--muted)">All participants have already voted!</p>';
   }else{showVoteForm(d.items);}
 }
 
-function selectName(name,itemList){
+function selectName(name){
   myName=name;
   $('vote-sub').innerHTML='Voting as <strong style="color:var(--gold-l)">'+name+'</strong>';
   $('name-picker').style.display='none';
-  showVoteForm(itemList);
+  showVoteForm(sessionItems);
 }
 
 function showVoteForm(itemList){
