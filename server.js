@@ -176,23 +176,31 @@ async function handleAPI(req, res) {
     const idx  = s.currentItem;
     if (idx >= s.items.length) return sendJSON(res, 400, { error: 'All items already rolled' });
 
-    // Store individual roll for this participant
     if (!s.itemRolls[idx]) s.itemRolls[idx] = { rolls: {}, rolledBy: [] };
     const ir    = s.itemRolls[idx];
     const name  = body.name;
-    const vtype = s.votes[name]?.[idx];
+    const vtype = s.votes[name]?.[idx] || 'pass';
 
-    if (!ir.rolls[name] && vtype !== 'pass') {
-      const roll     = Math.floor(Math.random() * 100) + 1;
-      ir.rolls[name] = { roll, type: vtype || 'greed' };
-      ir.rolledBy.push(name);
-      console.log(`[r] ${name} rolled ${roll} for item ${idx} in ${id}`);
-    } else if (vtype === 'pass') {
-      ir.rolls[name] = { roll: null, type: 'pass' };
+    // Determine active pool: needers if any exist, otherwise greeders
+    const needers  = s.participants.filter(p => s.votes[p]?.[idx] === 'need');
+    const greeders = s.participants.filter(p => s.votes[p]?.[idx] === 'greed');
+    const pool     = needers.length ? needers : greeders;
+    const inPool   = pool.includes(name);
+
+    if (!ir.rolls[name]) {
+      if (!inPool || vtype === 'pass') {
+        // Not competing — mark as pass/not-needed, no roll
+        ir.rolls[name] = { roll: null, type: vtype === 'pass' ? 'pass' : 'not-competing' };
+      } else {
+        // In active pool — roll
+        const roll     = Math.floor(Math.random() * 100) + 1;
+        ir.rolls[name] = { roll, type: vtype };
+        console.log(`[r] ${name} rolled ${roll} (${vtype}) for item ${idx} in ${id}`);
+      }
       if (!ir.rolledBy.includes(name)) ir.rolledBy.push(name);
     }
 
-    return sendJSON(res, 200, { ok: true, rolls: ir.rolls });
+    return sendJSON(res, 200, { ok: true, rolls: ir.rolls, pool });
   }
 
   // POST /api/session/:id/nextitem — GM advances to next item in dramatic mode
@@ -201,29 +209,39 @@ async function handleAPI(req, res) {
     const s  = sessions[id];
     if (!s) return sendJSON(res, 404, { error: 'Session not found' });
 
-    const idx = s.currentItem;
-    // Finalise current item — anyone who didn't roll yet gets auto-rolled or pass
+    const idx      = s.currentItem;
+    const needers  = s.participants.filter(p => s.votes[p]?.[idx] === 'need');
+    const greeders = s.participants.filter(p => s.votes[p]?.[idx] === 'greed');
+    const pool     = needers.length ? needers : greeders;
+
     if (!s.itemRolls[idx]) s.itemRolls[idx] = { rolls: {}, rolledBy: [] };
     const ir = s.itemRolls[idx];
+
+    // Fill in anyone who didn't roll in time
     s.participants.forEach(p => {
       if (!ir.rolls[p]) {
-        const vtype = s.votes[p]?.[idx];
-        if (vtype === 'pass' || !vtype) {
-          ir.rolls[p] = { roll: null, type: 'pass' };
+        const vtype  = s.votes[p]?.[idx] || 'pass';
+        const inPool = pool.includes(p);
+        if (!inPool || vtype === 'pass') {
+          ir.rolls[p] = { roll: null, type: vtype === 'pass' ? 'pass' : 'not-competing' };
         } else {
+          // Auto-roll for pool member who didn't roll in time
           ir.rolls[p] = { roll: Math.floor(Math.random() * 100) + 1, type: vtype };
         }
       }
     });
 
-    // Determine winner for this item
+    // Determine winner — need beats greed, only pool rolls count
     let winner = null, best = -1;
-    const needers  = Object.entries(ir.rolls).filter(([,v]) => v.type === 'need');
-    const greeders = Object.entries(ir.rolls).filter(([,v]) => v.type === 'greed');
-    const pool     = needers.length ? needers : greeders;
-    pool.forEach(([p, v]) => { if (v.roll > best) { best = v.roll; winner = p; } });
-    ir.winner = winner;
+    pool.forEach(p => {
+      const r = ir.rolls[p];
+      if (r?.roll != null && r.roll > best) { best = r.roll; winner = p; }
+    });
 
+    // Uncontested single pool member wins automatically
+    if (pool.length === 1) winner = pool[0];
+
+    ir.winner = winner;
     s.currentItem++;
 
     // If all items done, finalise session
