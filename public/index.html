@@ -449,14 +449,22 @@ function renderDramaticGM(d){
   const ir=d.itemRolls&&d.itemRolls[idx];
   const rolls=ir?ir.rolls:{};
 
+  const needers=d.participants.filter(p=>d.votes[p]?.[idx]==='need');
+  const greeders=d.participants.filter(p=>d.votes[p]?.[idx]==='greed');
+  const pool=needers.length?needers:greeders;
+
   $('dgm-rolls').innerHTML=d.participants.map(p=>{
     const vtype=d.votes[p]?.[idx]||'pass';
+    const inPool=pool.includes(p);
     const r=rolls[p];
-    const rollDisplay=r?(r.roll!==null?r.roll:'PASS'):'—';
-    return `<div class="roll-row">
+    let rollDisplay,dimmed=false;
+    if(vtype==='pass'){rollDisplay='PASS';dimmed=true;}
+    else if(!inPool){rollDisplay='not rolling';dimmed=true;}
+    else rollDisplay=r?(r.roll!==null?r.roll:'—'):'—';
+    return `<div class="roll-row" ${dimmed?'style="opacity:.4"':''}>
       <span class="pname">${p}</span>
       <span class="vote-type ${vtype}">${vtype.toUpperCase()}</span>
-      <span class="roll-num ${r?'revealed':''}" id="dgm-roll-${p.replace(/\s/g,'_')}">${rollDisplay}</span>
+      <span class="roll-num ${r&&r.roll!=null?'revealed':''}" id="dgm-roll-${p.replace(/\W/g,'_')}">${rollDisplay}</span>
     </div>`;
   }).join('');
 
@@ -478,13 +486,13 @@ function renderDramaticGM(d){
 }
 
 function highlightBest(rolls,participants,votes,idx){
-  let best=-1,bestP=null;
-  const needers=participants.filter(p=>votes[p]?.[idx]==='need'&&rolls[p]?.roll!=null);
-  const greeders=participants.filter(p=>votes[p]?.[idx]==='greed'&&rolls[p]?.roll!=null);
+  const needers=participants.filter(p=>votes[p]?.[idx]==='need');
+  const greeders=participants.filter(p=>votes[p]?.[idx]==='greed');
   const pool=needers.length?needers:greeders;
+  let best=-1,bestP=null;
   pool.forEach(p=>{if(rolls[p]?.roll>best){best=rolls[p].roll;bestP=p;}});
   participants.forEach(p=>{
-    const el=$('dgm-roll-'+p.replace(/\s/g,'_'));
+    const el=$('dgm-roll-'+p.replace(/\W/g,'_'));
     if(el)el.classList.toggle('best',p===bestP);
   });
 }
@@ -547,37 +555,77 @@ function updateParticipantDramatic(d){
   $('dp-itemname').textContent='🗡️ '+d.items[idx];
 
   const vtype=myName&&d.votes[myName]?.[idx]||'pass';
+
+  // Work out who is in the active rolling pool
+  const needers=d.participants.filter(p=>d.votes[p]?.[idx]==='need');
+  const greeders=d.participants.filter(p=>d.votes[p]?.[idx]==='greed');
+  const pool=needers.length?needers:greeders;
+  const inPool=pool.includes(myName);
+
   const typeLabel={need:'<span style="color:var(--need);font-weight:600">NEED</span>',greed:'<span style="color:var(--greed);font-weight:600">GREED</span>',pass:'<span style="color:var(--pass)">PASS</span>'};
   $('dp-vote-label').innerHTML='Your vote: '+typeLabel[vtype];
 
-  if(vtype==='pass'&&!myRollSubmitted){
-    // Auto-mark pass, no button needed
-    $('dp-roll-wrap').style.display='none';
-    $('dp-roll-result').textContent='PASS';
-    $('dp-roll-result').style.color='var(--pass)';
-    $('dp-roll-result').style.display='block';
-    $('dp-roll-label2').textContent='You passed on this item';
-    $('dp-roll-label2').style.display='block';
-    myRollSubmitted=true;
-    api('POST','/session/'+sid+'/rollitem',{name:myName,itemIdx:idx});
-  }
-
-  // Show others' rolls
   const ir=d.itemRolls&&d.itemRolls[idx];
   const rolls=ir?ir.rolls:{};
+
+  if(!myRollSubmitted){
+    if(vtype==='pass'||!inPool){
+      // Not in the running — show status immediately, no roll button
+      $('dp-roll-wrap').style.display='none';
+      if(vtype==='pass'){
+        $('dp-roll-result').textContent='PASS';
+        $('dp-roll-result').style.color='var(--pass)';
+        $('dp-roll-label2').textContent='You passed on this item';
+      } else {
+        // greed but needers exist, or need but greeders rolling
+        $('dp-roll-result').textContent='—';
+        $('dp-roll-result').style.color='var(--muted)';
+        $('dp-roll-label2').textContent=needers.length&&vtype==='greed'
+          ?'Someone needed — you don\'t roll'
+          :'You\'re not in the running for this item';
+      }
+      $('dp-roll-result').style.display='block';
+      $('dp-roll-label2').style.display='block';
+      myRollSubmitted=true;
+      // Still notify server so it marks us correctly
+      api('POST','/session/'+sid+'/rollitem',{name:myName,itemIdx:idx});
+    } else if(pool.length===1&&pool[0]===myName){
+      // Sole contender — auto win, no roll needed
+      $('dp-roll-wrap').style.display='none';
+      $('dp-roll-result').textContent='🏆';
+      $('dp-roll-result').style.color='var(--gold-l)';
+      $('dp-roll-result').style.display='block';
+      $('dp-roll-label2').textContent='You\'re the only one — you win!';
+      $('dp-roll-label2').style.display='block';
+      myRollSubmitted=true;
+      api('POST','/session/'+sid+'/rollitem',{name:myName,itemIdx:idx});
+    }
+    // else: in pool with others — show roll button (already visible by default)
+  }
+
+  // Show others' rows (only show pool members + passers, skip not-competing clutter)
   const others=d.participants.filter(p=>p!==myName);
   $('dp-others').innerHTML=others.map(p=>{
     const r=rolls[p];
-    const rvtype=d.votes[p]?.[idx]||'pass';
-    const rollDisplay=r?(r.roll!==null?r.roll:'PASS'):'—';
+    const pvtype=d.votes[p]?.[idx]||'pass';
+    const inOtherPool=pool.includes(p);
+    if(!inOtherPool&&pvtype!=='pass'){
+      // greed when needers exist — not shown
+      return `<div class="roll-row" style="opacity:.35">
+        <span class="pname">${p}</span>
+        <span class="vote-type greed">GREED</span>
+        <span class="roll-num" style="font-size:13px;color:var(--muted)">not rolling</span>
+      </div>`;
+    }
+    const rollDisplay=r?(r.roll!==null?r.roll:'PASS'):(pvtype==='pass'?'PASS':'—');
     return `<div class="roll-row">
       <span class="pname">${p}</span>
-      <span class="vote-type ${rvtype}">${rvtype.toUpperCase()}</span>
-      <span class="roll-num ${r?'revealed':''}">${rollDisplay}</span>
+      <span class="vote-type ${pvtype}">${pvtype.toUpperCase()}</span>
+      <span class="roll-num ${r&&r.roll!==null?'revealed':''}">${rollDisplay}</span>
     </div>`;
   }).join('');
 
-  // Winner (shown by GM via nextitem)
+  // Winner banner (shown after GM clicks Next)
   const winner=ir&&ir.winner;
   if(winner){
     $('dp-winner').style.display='block';
