@@ -437,6 +437,7 @@ let dgmSession=null;
 function renderDramaticGM(d){
   dgmSession=d;
   const idx=d.currentItem;
+  const sidx=String(idx); // JSON keys are always strings
   const total=d.items.length;
 
   // Progress dots
@@ -446,21 +447,21 @@ function renderDramaticGM(d){
   $('dgm-itemnum').textContent=`Item ${idx+1} of ${total}`;
   $('dgm-itemname').textContent='🗡️ '+d.items[idx];
 
-  const ir=d.itemRolls&&d.itemRolls[idx];
+  const ir=d.itemRolls&&d.itemRolls[sidx];
   const rolls=ir?ir.rolls:{};
 
-  const needers=d.participants.filter(p=>d.votes[p]?.[idx]==='need');
-  const greeders=d.participants.filter(p=>d.votes[p]?.[idx]==='greed');
+  const needers=d.participants.filter(p=>d.votes[p]?.[sidx]==='need');
+  const greeders=d.participants.filter(p=>d.votes[p]?.[sidx]==='greed');
   const pool=needers.length?needers:greeders;
 
   $('dgm-rolls').innerHTML=d.participants.map(p=>{
-    const vtype=d.votes[p]?.[idx]||'pass';
+    const vtype=d.votes[p]?.[sidx]||'pass';
     const inPool=pool.includes(p);
     const r=rolls[p];
     let rollDisplay,dimmed=false;
     if(vtype==='pass'){rollDisplay='PASS';dimmed=true;}
     else if(!inPool){rollDisplay='not rolling';dimmed=true;}
-    else rollDisplay=r?(r.roll!==null?r.roll:'—'):'—';
+    else rollDisplay=r?(r.roll!==null?String(r.roll):'—'):'—';
     return `<div class="roll-row" ${dimmed?'style="opacity:.4"':''}>
       <span class="pname">${p}</span>
       <span class="vote-type ${vtype}">${vtype.toUpperCase()}</span>
@@ -468,11 +469,11 @@ function renderDramaticGM(d){
     </div>`;
   }).join('');
 
-  // Highlight best
-  highlightBest(rolls,d.participants,d.votes,idx);
+  highlightBest(rolls,d.participants,d.votes,sidx);
 
   // Winner banner + Next button
   const winner=ir&&ir.winner;
+  const poolRolled=pool.length===0||pool.every(p=>rolls[p]!==undefined);
   if(winner){
     $('dgm-winner').style.display='block';
     $('dgm-wname').textContent='🏆 '+winner;
@@ -482,22 +483,24 @@ function renderDramaticGM(d){
     $('dgm-next-btn').textContent=idx+1<total?'Next Item →':'🏁 Finish & Show Results';
   } else {
     $('dgm-winner').style.display='none';
-    // Show Next button once all pool members have rolled (or pool is empty)
-    const poolRolled=pool.length===0||pool.every(p=>rolls[p]&&rolls[p].roll!==null);
-    const singleUncontested=pool.length===1;
-    if(poolRolled||singleUncontested){
+    if(poolRolled){
+      // All rolled — show greyed button while waiting (winner set on Next click)
       $('dgm-next-btn').style.display='block';
       $('dgm-next-btn').disabled=false;
       $('dgm-next-btn').textContent=idx+1<total?'Next Item →':'🏁 Finish & Show Results';
     } else {
-      $('dgm-next-btn').style.display='none';
+      // Still waiting — show disabled button so GM sees it coming
+      const rolledCount=pool.filter(p=>rolls[p]!==undefined).length;
+      $('dgm-next-btn').style.display='block';
+      $('dgm-next-btn').disabled=true;
+      $('dgm-next-btn').textContent=`Waiting for rolls… (${rolledCount}/${pool.length})`;
     }
   }
 }
 
-function highlightBest(rolls,participants,votes,idx){
-  const needers=participants.filter(p=>votes[p]?.[idx]==='need');
-  const greeders=participants.filter(p=>votes[p]?.[idx]==='greed');
+function highlightBest(rolls,participants,votes,sidx){
+  const needers=participants.filter(p=>votes[p]?.[sidx]==='need');
+  const greeders=participants.filter(p=>votes[p]?.[sidx]==='greed');
   const pool=needers.length?needers:greeders;
   let best=-1,bestP=null;
   pool.forEach(p=>{if(rolls[p]?.roll>best){best=rolls[p].roll;bestP=p;}});
@@ -564,18 +567,19 @@ function updateParticipantDramatic(d){
   $('dp-itemnum').textContent=`Item ${idx+1} of ${total}`;
   $('dp-itemname').textContent='🗡️ '+d.items[idx];
 
-  const vtype=myName&&d.votes[myName]?.[idx]||'pass';
+  const sidx=String(idx);
+  const vtype=myName&&d.votes[myName]?.[sidx]||'pass';
 
   // Work out who is in the active rolling pool
-  const needers=d.participants.filter(p=>d.votes[p]?.[idx]==='need');
-  const greeders=d.participants.filter(p=>d.votes[p]?.[idx]==='greed');
+  const needers=d.participants.filter(p=>d.votes[p]?.[sidx]==='need');
+  const greeders=d.participants.filter(p=>d.votes[p]?.[sidx]==='greed');
   const pool=needers.length?needers:greeders;
   const inPool=pool.includes(myName);
 
   const typeLabel={need:'<span style="color:var(--need);font-weight:600">NEED</span>',greed:'<span style="color:var(--greed);font-weight:600">GREED</span>',pass:'<span style="color:var(--pass)">PASS</span>'};
   $('dp-vote-label').innerHTML='Your vote: '+typeLabel[vtype];
 
-  const ir=d.itemRolls&&d.itemRolls[idx];
+  const ir=d.itemRolls&&d.itemRolls[sidx];
   const rolls=ir?ir.rolls:{};
 
   if(!myRollSubmitted){
@@ -617,7 +621,7 @@ function updateParticipantDramatic(d){
   const others=d.participants.filter(p=>p!==myName);
   $('dp-others').innerHTML=others.map(p=>{
     const r=rolls[p];
-    const pvtype=d.votes[p]?.[idx]||'pass';
+    const pvtype=d.votes[p]?.[sidx]||'pass';
     const inOtherPool=pool.includes(p);
     if(!inOtherPool&&pvtype!=='pass'){
       // greed when needers exist — not shown
