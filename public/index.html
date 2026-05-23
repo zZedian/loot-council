@@ -471,17 +471,27 @@ function renderDramaticGM(d){
   // Highlight best
   highlightBest(rolls,d.participants,d.votes,idx);
 
-  // Winner banner
+  // Winner banner + Next button
   const winner=ir&&ir.winner;
   if(winner){
     $('dgm-winner').style.display='block';
     $('dgm-wname').textContent='🏆 '+winner;
     $('dgm-witem').textContent='wins '+d.items[idx];
     $('dgm-next-btn').style.display='block';
+    $('dgm-next-btn').disabled=false;
     $('dgm-next-btn').textContent=idx+1<total?'Next Item →':'🏁 Finish & Show Results';
   } else {
     $('dgm-winner').style.display='none';
-    $('dgm-next-btn').style.display='none';
+    // Show Next button once all pool members have rolled (or pool is empty)
+    const poolRolled=pool.length===0||pool.every(p=>rolls[p]&&rolls[p].roll!==null);
+    const singleUncontested=pool.length===1;
+    if(poolRolled||singleUncontested){
+      $('dgm-next-btn').style.display='block';
+      $('dgm-next-btn').disabled=false;
+      $('dgm-next-btn').textContent=idx+1<total?'Next Item →':'🏁 Finish & Show Results';
+    } else {
+      $('dgm-next-btn').style.display='none';
+    }
   }
 }
 
