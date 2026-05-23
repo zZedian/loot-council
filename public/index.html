@@ -29,8 +29,7 @@
   .hint{font-size:11px;color:var(--muted);margin-bottom:6px}
   .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;min-height:22px}
   .tag{background:var(--surf2);border:1px solid var(--bdr);border-radius:4px;padding:3px 9px;font-size:13px;display:flex;align-items:center;gap:5px}
-  .tag .x{color:var(--muted);cursor:pointer;font-size:15px;line-height:1}
-  .tag .x:hover{color:var(--need)}
+  .tag .x{color:var(--muted);cursor:pointer;font-size:15px;line-height:1}.tag .x:hover{color:var(--need)}
   button{background:transparent;border:1px solid var(--bdr-s);color:var(--gold);padding:9px 18px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:14px;transition:all .15s}
   button:hover{background:rgba(201,168,76,.1);border-color:var(--gold)}
   button:active{transform:scale(.98)}
@@ -60,21 +59,16 @@
   .vc .iname{font-size:14px;color:var(--gold-l);flex:1;min-width:100px}
   .vbtns{display:flex;gap:5px}
   .vbtn{padding:7px 13px;font-size:12px;border-radius:6px;font-weight:600}
-  .vbtn.need{border-color:var(--need);color:var(--need)}
-  .vbtn.need.sel,.vbtn.need:hover{background:var(--need);color:#fff}
-  .vbtn.greed{border-color:var(--greed);color:var(--greed)}
-  .vbtn.greed.sel,.vbtn.greed:hover{background:var(--greed);color:#fff}
-  .vbtn.pass{border-color:var(--pass);color:var(--pass)}
-  .vbtn.pass.sel,.vbtn.pass:hover{background:var(--pass);color:#fff}
+  .vbtn.need{border-color:var(--need);color:var(--need)}.vbtn.need.sel,.vbtn.need:hover{background:var(--need);color:#fff}
+  .vbtn.greed{border-color:var(--greed);color:var(--greed)}.vbtn.greed.sel,.vbtn.greed:hover{background:var(--greed);color:#fff}
+  .vbtn.pass{border-color:var(--pass);color:var(--pass)}.vbtn.pass.sel,.vbtn.pass:hover{background:var(--pass);color:#fff}
   .nopt{background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;padding:13px 17px;cursor:pointer;font-size:15px;text-align:left;color:#e8e0cc;transition:all .15s;width:100%;margin-bottom:8px;display:block}
   .nopt:hover{border-color:var(--gold);color:var(--gold-l);background:rgba(201,168,76,.08)}
   .rc{background:var(--surf);border:1px solid var(--bdr);border-radius:8px;padding:14px;margin-bottom:10px}
   .rhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px}
   .rname{font-size:14px;color:var(--gold-l)}
   .rrolls{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.8}
-  .nl{color:var(--need);font-weight:600}
-  .gl{color:var(--greed);font-weight:600}
-  .pl{color:var(--pass)}
+  .nl{color:var(--need);font-weight:600}.gl{color:var(--greed);font-weight:600}.pl{color:var(--pass)}
   .avatar{width:34px;height:34px;border-radius:50%;background:var(--surf3);border:1px solid var(--bdr-s);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--gold);flex-shrink:0}
   .won-items{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
   .wi{background:rgba(201,168,76,.1);border:1px solid var(--bdr-s);border-radius:4px;padding:2px 9px;font-size:12px;color:var(--gold)}
@@ -83,7 +77,48 @@
   .tip{font-size:12px;color:var(--muted);padding:9px 13px;background:rgba(201,168,76,.05);border:1px solid var(--bdr);border-radius:6px;margin-top:8px;word-break:break-all}
   .spin{display:inline-block;width:16px;height:16px;border:2px solid var(--bdr);border-top-color:var(--gold);border-radius:50%;animation:sp .8s linear infinite;vertical-align:middle;margin-right:6px}
   @keyframes sp{to{transform:rotate(360deg)}}
-  @media(max-width:500px){.two-col{grid-template-columns:1fr}.vbtns{flex-wrap:wrap}}
+
+  /* Roll mode picker */
+  .mode-pick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .mode-card{border:2px solid var(--bdr);border-radius:8px;padding:14px;cursor:pointer;text-align:center;transition:all .15s}
+  .mode-card:hover{border-color:var(--gold-d)}
+  .mode-card.sel{border-color:var(--gold);background:rgba(201,168,76,.07)}
+  .mode-card .mi{font-size:26px;margin-bottom:6px}
+  .mode-card .mt{font-size:14px;color:var(--gold-l);margin-bottom:3px;font-weight:600}
+  .mode-card .ms{font-size:11px;color:var(--muted)}
+
+  /* Dramatic roll screen */
+  .item-stage{text-align:center;padding:20px 0 10px}
+  .item-stage .item-num{font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+  .item-stage .item-title{font-size:22px;color:var(--gold-l);font-weight:600;margin-bottom:20px}
+  .roll-rows{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+  .roll-row{background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .roll-row .pname{font-size:14px;flex:1}
+  .roll-row .vote-type{font-size:11px;padding:2px 8px;border-radius:4px;font-weight:600;flex-shrink:0}
+  .vote-type.need{background:rgba(224,82,82,.15);color:var(--need);border:1px solid rgba(224,82,82,.3)}
+  .vote-type.greed{background:rgba(91,156,224,.15);color:var(--greed);border:1px solid rgba(91,156,224,.3)}
+  .vote-type.pass{background:rgba(107,114,128,.15);color:var(--pass);border:1px solid rgba(107,114,128,.3)}
+  .roll-num{font-size:28px;font-family:monospace;font-weight:700;min-width:50px;text-align:right}
+  .roll-num.rolling{animation:flicker .08s infinite}
+  @keyframes flicker{0%,100%{opacity:1}50%{opacity:.3}}
+  .roll-num.revealed{transition:color .3s}
+  .roll-num.best{color:var(--gold-l);text-shadow:0 0 12px rgba(201,168,76,.5)}
+  .winner-banner{background:rgba(201,168,76,.1);border:2px solid var(--bdr-s);border-radius:10px;padding:20px;text-align:center;margin-bottom:16px;display:none}
+  .winner-banner .wlabel{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+  .winner-banner .wname{font-size:26px;color:var(--gold-l);font-weight:600}
+  .winner-banner .witem{font-size:13px;color:var(--muted);margin-top:4px}
+  .progress-dots{display:flex;gap:6px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--surf3);border:1px solid var(--bdr);transition:all .3s}
+  .dot.done{background:var(--gold-d);border-color:var(--gold-d)}
+  .dot.active{background:var(--gold);border-color:var(--gold);box-shadow:0 0 6px rgba(201,168,76,.5)}
+  /* participant roll button */
+  .my-roll-wrap{text-align:center;padding:16px 0}
+  .btn-roll{font-size:22px;padding:16px 40px;background:var(--gold);color:#0d0d0f;border-color:var(--gold);font-weight:700;width:100%;border-radius:10px}
+  .btn-roll:hover{background:var(--gold-l)}
+  .my-roll-result{font-size:48px;font-family:monospace;font-weight:700;color:var(--gold-l);text-align:center;padding:10px 0;display:none}
+  .my-roll-label{font-size:13px;color:var(--muted);text-align:center;margin-top:4px;display:none}
+
+  @media(max-width:500px){.two-col{grid-template-columns:1fr}.vbtns{flex-wrap:wrap}.mode-pick{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -92,16 +127,8 @@
 <div id="s-land" class="screen active">
   <div class="hdr"><div class="crown">⚔️</div><h1>Loot Council</h1><p class="sub">Fair loot distribution for raids &amp; parties</p></div>
   <div class="two-col">
-    <div class="card choice" onclick="show('s-setup')">
-      <div class="choice-icon">🛡️</div>
-      <div class="choice-title">Create Session</div>
-      <div class="choice-sub">GM / Raid Leader</div>
-    </div>
-    <div class="card choice" onclick="show('s-join')">
-      <div class="choice-icon">🧙</div>
-      <div class="choice-title">Join Session</div>
-      <div class="choice-sub">Participant</div>
-    </div>
+    <div class="card choice" onclick="show('s-setup')"><div class="choice-icon">🛡️</div><div class="choice-title">Create Session</div><div class="choice-sub">GM / Raid Leader</div></div>
+    <div class="card choice" onclick="show('s-join')"><div class="choice-icon">🧙</div><div class="choice-title">Join Session</div><div class="choice-sub">Participant</div></div>
   </div>
 </div>
 
@@ -133,6 +160,21 @@
     <p class="hint">Separate multiple names with commas</p>
     <div class="tags" id="part-tags"></div>
   </div>
+  <div class="card">
+    <div class="card-t">🎲 Roll Mode</div>
+    <div class="mode-pick">
+      <div class="mode-card sel" id="mode-quick" onclick="pickMode('quick')">
+        <div class="mi">⚡</div>
+        <div class="mt">Quick Roll</div>
+        <div class="ms">GM rolls everything at once instantly</div>
+      </div>
+      <div class="mode-card" id="mode-dramatic" onclick="pickMode('dramatic')">
+        <div class="mi">🎲</div>
+        <div class="mt">Dramatic Roll</div>
+        <div class="ms">Each player rolls their own dice, item by item</div>
+      </div>
+    </div>
+  </div>
   <button class="btn-p" id="create-btn" onclick="createSession()">⚔️ Create Session</button>
   <button class="btn-back" onclick="show('s-land')">← Back</button>
 </div>
@@ -140,16 +182,13 @@
 <!-- GM LOBBY -->
 <div id="s-lobby" class="screen">
   <div class="hdr"><div class="crown">🔢</div><h1>Session Live</h1><p class="sub">Share this code with your party</p></div>
-  <div class="code-box">
-    <div class="code" id="lobby-code">——</div>
-    <div class="code-lbl">Session Code — participants open this page and click Join</div>
-  </div>
+  <div class="code-box"><div class="code" id="lobby-code">——</div><div class="code-lbl">Session Code — participants open this page and click Join</div></div>
   <div class="tip" id="share-url"></div>
   <div class="card" style="margin-top:14px">
     <div class="card-t">👥 Participant Status</div>
     <div id="status-list"><span class="spin"></span>Loading…</div>
   </div>
-  <button class="btn-p" id="resolve-btn" onclick="resolveResults()">🎲 Roll &amp; Distribute Loot</button>
+  <button class="btn-p" id="resolve-btn" onclick="startRolling()">🎲 Start Rolling</button>
   <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:6px" id="resolve-hint"></p>
 </div>
 
@@ -166,8 +205,50 @@
     <div class="card" style="text-align:center;padding:30px">
       <div style="font-size:38px;margin-bottom:10px">✅</div>
       <h2>Votes Submitted!</h2>
-      <p style="color:var(--muted);font-size:14px;margin-top:8px">Waiting for the GM to roll. This page updates automatically.</p>
+      <p style="color:var(--muted);font-size:14px;margin-top:8px">Waiting for the GM to start rolling. This page updates automatically.</p>
     </div>
+  </div>
+</div>
+
+<!-- DRAMATIC ROLL — GM VIEW -->
+<div id="s-dramatic-gm" class="screen">
+  <div class="hdr"><div class="crown">🎲</div><h1>Rolling Loot</h1><p class="sub" id="dgm-sub">Item by item</p></div>
+  <div class="progress-dots" id="dgm-dots"></div>
+  <div class="item-stage">
+    <div class="item-num" id="dgm-itemnum"></div>
+    <div class="item-title" id="dgm-itemname"></div>
+  </div>
+  <div class="roll-rows" id="dgm-rolls"></div>
+  <div class="winner-banner" id="dgm-winner">
+    <div class="wlabel">🏆 Winner</div>
+    <div class="wname" id="dgm-wname"></div>
+    <div class="witem" id="dgm-witem"></div>
+  </div>
+  <button class="btn-p" id="dgm-next-btn" onclick="gmNextItem()" style="display:none"></button>
+</div>
+
+<!-- DRAMATIC ROLL — PARTICIPANT VIEW -->
+<div id="s-dramatic-p" class="screen">
+  <div class="hdr"><div class="crown">🎲</div><h1>Roll Your Dice!</h1><p class="sub" id="dp-sub"></p></div>
+  <div class="progress-dots" id="dp-dots"></div>
+  <div class="card" style="text-align:center;padding:20px 18px">
+    <div class="item-num" id="dp-itemnum" style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px"></div>
+    <div class="item-title" id="dp-itemname" style="font-size:20px;color:var(--gold-l);font-weight:600;margin-bottom:16px"></div>
+    <div id="dp-vote-label" style="font-size:13px;margin-bottom:16px;color:var(--muted)"></div>
+    <div class="my-roll-wrap" id="dp-roll-wrap">
+      <button class="btn-roll" id="dp-roll-btn" onclick="participantRoll()">🎲 Roll!</button>
+    </div>
+    <div class="my-roll-result" id="dp-roll-result"></div>
+    <div class="my-roll-label" id="dp-roll-label2"></div>
+  </div>
+  <div class="roll-rows" id="dp-others" style="margin-top:12px"></div>
+  <div class="winner-banner" id="dp-winner" style="margin-top:12px">
+    <div class="wlabel">🏆 Winner</div>
+    <div class="wname" id="dp-wname"></div>
+    <div class="witem" id="dp-witem"></div>
+  </div>
+  <div id="dp-waiting" class="card" style="text-align:center;padding:18px;display:none;margin-top:8px">
+    <span class="spin"></span><span style="color:var(--muted);font-size:13px">Waiting for GM to reveal next item…</span>
   </div>
 </div>
 
@@ -183,13 +264,15 @@
 
 <script>
 const $=id=>document.getElementById(id);
-let items=[],parts=[],sid=null,myName=null,myVotes={},pollT=null;
-const split=v=>v.split(',').map(s=>s.trim()).filter(Boolean);
+let items=[],parts=[],sid=null,myName=null,myVotes={},pollT=null,rollMode='quick',sessionItems=[];
+let isGM=false, dramaticPollT=null;
 
+const split=v=>v.split(',').map(s=>s.trim()).filter(Boolean);
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active')}
 
+// ── Tags ──────────────────────────────────────────────────────────────────────
 function renderTags(cid,arr,key){
-  $(cid).innerHTML=arr.map((v,i)=>`<div class="tag">${v} <span class="x" onclick="rm('${key}',${i})">×</span></div>`).join('')
+  $(cid).innerHTML=arr.map((v,i)=>`<div class="tag">${v}<span class="x" onclick="rm('${key}',${i})">×</span></div>`).join('')
     ||'<span style="color:var(--muted);font-size:13px;font-style:italic">None added yet</span>';
 }
 function addItems(){split($('item-in').value).forEach(v=>{if(!items.includes(v))items.push(v)});$('item-in').value='';renderTags('item-tags',items,'items')}
@@ -199,21 +282,30 @@ $('item-in').addEventListener('keydown',e=>e.key==='Enter'&&addItems());
 $('part-in').addEventListener('keydown',e=>e.key==='Enter'&&addParts());
 $('jcode').addEventListener('keydown',e=>e.key==='Enter'&&joinSession());
 
+function pickMode(m){
+  rollMode=m;
+  $('mode-quick').classList.toggle('sel',m==='quick');
+  $('mode-dramatic').classList.toggle('sel',m==='dramatic');
+}
+
+// ── API ───────────────────────────────────────────────────────────────────────
 async function api(method,path,body){
   const r=await fetch('/api'+path,{method,headers:{'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
   return r.json();
 }
 
+// ── Create / Join ─────────────────────────────────────────────────────────────
 async function createSession(){
   if(!items.length)return alert('Add at least one item!');
   if(!parts.length)return alert('Add at least one participant!');
   const btn=$('create-btn');btn.disabled=true;btn.textContent='Creating…';
-  const data=await api('POST','/session',{items,participants:parts});
+  const data=await api('POST','/session',{items,participants:parts,rollMode});
   btn.disabled=false;btn.textContent='⚔️ Create Session';
   if(data.error)return alert('Error: '+data.error);
-  sid=data.id;
+  sid=data.id;isGM=true;
   $('lobby-code').textContent=data.id;
   $('share-url').textContent='Share this page URL with your party: '+location.href+' — they click Join and enter code '+data.id;
+  $('resolve-btn').textContent=rollMode==='quick'?'⚡ Quick Roll — Distribute All Loot':'🎲 Start Dramatic Roll';
   show('s-lobby');
   startLobbyPoll();
 }
@@ -224,13 +316,21 @@ async function joinSession(){
   $('jerr').style.display='none';
   const data=await api('GET','/session/'+code);
   if(data.error){$('jerr').style.display='block';return;}
-  sid=code;
+  sid=code;isGM=false;
   if(data.resolved){renderResults(data);show('s-results');return;}
+  // If dramatic roll already started, go to participant roll screen
+  if(data.rollMode==='dramatic'&&data.currentItem>0){
+    sessionItems=data.items;
+    rollMode=data.rollMode;
+    gotoParticipantDramatic(data);
+    return;
+  }
   show('s-vote');
   initVoteScreen(data);
   startVotePoll();
 }
 
+// ── Lobby ─────────────────────────────────────────────────────────────────────
 function startLobbyPoll(){
   clearInterval(pollT);
   pollT=setInterval(async()=>{
@@ -246,6 +346,11 @@ function startVotePoll(){
   pollT=setInterval(async()=>{
     if(!$('s-vote').classList.contains('active'))return;
     const d=await api('GET','/session/'+sid);
+    // Dramatic roll started while we're on vote-done screen
+    if(d.rollMode==='dramatic'&&d.currentItem>0&&$('vote-done').style.display!=='none'){
+      clearInterval(pollT);sessionItems=d.items;rollMode=d.rollMode;
+      gotoParticipantDramatic(d);return;
+    }
     if(d.resolved){clearInterval(pollT);renderResults(d);show('s-results');}
   },3000);
 }
@@ -258,14 +363,12 @@ function renderStatusList(d){
   ).join('');
 }
 
-let sessionItems=[];
-
+// ── Vote screen ───────────────────────────────────────────────────────────────
 function initVoteScreen(d){
-  sessionItems=d.items;
+  sessionItems=d.items;rollMode=d.rollMode;
   if(myName&&d.votes&&d.votes[myName]){showDone();return;}
   if(!myName){
-    $('name-picker').style.display='block';
-    $('vote-form').style.display='none';
+    $('name-picker').style.display='block';$('vote-form').style.display='none';
     const avail=d.participants.filter(p=>!(d.votes&&d.votes[p]));
     $('name-opts').innerHTML=avail.length
       ?avail.map(p=>`<button class="nopt" onclick="selectName('${p.replace(/'/g,"\\'")}')">${p}</button>`).join('')
@@ -283,8 +386,7 @@ function selectName(name){
 function showVoteForm(itemList){
   $('vote-form').style.display='block';myVotes={};
   $('vote-items').innerHTML=itemList.map((item,i)=>
-    `<div class="vc">
-      <span class="iname">🗡️ ${item}</span>
+    `<div class="vc"><span class="iname">🗡️ ${item}</span>
       <div class="vbtns">
         <button class="vbtn need" onclick="sv(${i},'need',this)">NEED</button>
         <button class="vbtn greed" onclick="sv(${i},'greed',this)">GREED</button>
@@ -310,18 +412,209 @@ async function submitVotes(){
 }
 
 function showDone(){
-  $('vote-form').style.display='none';
-  $('name-picker').style.display='none';
-  $('vote-done').style.display='block';
+  $('vote-form').style.display='none';$('name-picker').style.display='none';$('vote-done').style.display='block';
 }
 
-async function resolveResults(){
-  const btn=$('resolve-btn');btn.disabled=true;btn.textContent='Rolling the dice…';
-  const d=await api('POST','/session/'+sid+'/resolve');
-  if(d.error){btn.disabled=false;btn.textContent='🎲 Roll & Distribute Loot';return alert(d.error);}
-  renderResults(d);show('s-results');
+// ── Start rolling (GM button) ─────────────────────────────────────────────────
+async function startRolling(){
+  const d=await api('GET','/session/'+sid);
+  if(d.rollMode==='quick'){
+    const btn=$('resolve-btn');btn.disabled=true;btn.textContent='Rolling…';
+    const res=await api('POST','/session/'+sid+'/resolve');
+    if(res.error){btn.disabled=false;btn.textContent='⚡ Quick Roll — Distribute All Loot';return alert(res.error);}
+    renderResults(res);show('s-results');
+  } else {
+    // Dramatic: push currentItem from 0 to 1 to signal start, then show GM dramatic screen
+    sessionItems=d.items;rollMode='dramatic';
+    renderDramaticGM(d);
+    show('s-dramatic-gm');
+    startDramaticPoll();
+  }
 }
 
+// ── DRAMATIC — GM ─────────────────────────────────────────────────────────────
+let dgmSession=null;
+
+function renderDramaticGM(d){
+  dgmSession=d;
+  const idx=d.currentItem;
+  const total=d.items.length;
+
+  // Progress dots
+  $('dgm-dots').innerHTML=d.items.map((_,i)=>
+    `<div class="dot ${i<idx?'done':i===idx?'active':''}"></div>`).join('');
+  $('dgm-sub').textContent=`Item ${idx+1} of ${total}`;
+  $('dgm-itemnum').textContent=`Item ${idx+1} of ${total}`;
+  $('dgm-itemname').textContent='🗡️ '+d.items[idx];
+
+  const ir=d.itemRolls&&d.itemRolls[idx];
+  const rolls=ir?ir.rolls:{};
+
+  $('dgm-rolls').innerHTML=d.participants.map(p=>{
+    const vtype=d.votes[p]?.[idx]||'pass';
+    const r=rolls[p];
+    const rollDisplay=r?(r.roll!==null?r.roll:'PASS'):'—';
+    return `<div class="roll-row">
+      <span class="pname">${p}</span>
+      <span class="vote-type ${vtype}">${vtype.toUpperCase()}</span>
+      <span class="roll-num ${r?'revealed':''}" id="dgm-roll-${p.replace(/\s/g,'_')}">${rollDisplay}</span>
+    </div>`;
+  }).join('');
+
+  // Highlight best
+  highlightBest(rolls,d.participants,d.votes,idx);
+
+  // Winner banner
+  const winner=ir&&ir.winner;
+  if(winner){
+    $('dgm-winner').style.display='block';
+    $('dgm-wname').textContent='🏆 '+winner;
+    $('dgm-witem').textContent='wins '+d.items[idx];
+    $('dgm-next-btn').style.display='block';
+    $('dgm-next-btn').textContent=idx+1<total?'Next Item →':'🏁 Finish & Show Results';
+  } else {
+    $('dgm-winner').style.display='none';
+    $('dgm-next-btn').style.display='none';
+  }
+}
+
+function highlightBest(rolls,participants,votes,idx){
+  let best=-1,bestP=null;
+  const needers=participants.filter(p=>votes[p]?.[idx]==='need'&&rolls[p]?.roll!=null);
+  const greeders=participants.filter(p=>votes[p]?.[idx]==='greed'&&rolls[p]?.roll!=null);
+  const pool=needers.length?needers:greeders;
+  pool.forEach(p=>{if(rolls[p]?.roll>best){best=rolls[p].roll;bestP=p;}});
+  participants.forEach(p=>{
+    const el=$('dgm-roll-'+p.replace(/\s/g,'_'));
+    if(el)el.classList.toggle('best',p===bestP);
+  });
+}
+
+function startDramaticPoll(){
+  clearInterval(dramaticPollT);
+  dramaticPollT=setInterval(async()=>{
+    const scr=isGM?'s-dramatic-gm':'s-dramatic-p';
+    if(!$(scr)?.classList.contains('active'))return;
+    const d=await api('GET','/session/'+sid);
+    if(isGM){
+      renderDramaticGM(d);
+      if(d.resolved){clearInterval(dramaticPollT);renderResults(d);show('s-results');}
+    } else {
+      updateParticipantDramatic(d);
+      if(d.resolved){clearInterval(dramaticPollT);renderResults(d);show('s-results');}
+    }
+  },2000);
+}
+
+async function gmNextItem(){
+  $('dgm-next-btn').disabled=true;$('dgm-next-btn').textContent='Moving on…';
+  const d=await api('POST','/session/'+sid+'/nextitem');
+  if(d.resolved){clearInterval(dramaticPollT);renderResults(d);show('s-results');return;}
+  renderDramaticGM(d);
+  $('dgm-next-btn').disabled=false;
+}
+
+// ── DRAMATIC — Participant ────────────────────────────────────────────────────
+let myRollSubmitted=false;
+let lastItemIdx=-1;
+
+function gotoParticipantDramatic(d){
+  myRollSubmitted=false;lastItemIdx=-1;
+  show('s-dramatic-p');
+  updateParticipantDramatic(d);
+  startDramaticPoll();
+}
+
+function updateParticipantDramatic(d){
+  const idx=d.currentItem;
+  const total=d.items.length;
+  if(idx>=total){return;}
+
+  // Reset roll state if item changed
+  if(idx!==lastItemIdx){
+    myRollSubmitted=false;lastItemIdx=idx;
+    $('dp-roll-result').style.display='none';
+    $('dp-roll-label2').style.display='none';
+    $('dp-winner').style.display='none';
+    $('dp-waiting').style.display='none';
+    const rb=$('dp-roll-btn');rb.disabled=false;rb.textContent='🎲 Roll!';
+    rb.parentElement.style.display='block';
+  }
+
+  $('dp-dots').innerHTML=d.items.map((_,i)=>
+    `<div class="dot ${i<idx?'done':i===idx?'active':''}"></div>`).join('');
+  $('dp-sub').innerHTML='Voting as <strong style="color:var(--gold-l)">'+(myName||'...')+'</strong>';
+  $('dp-itemnum').textContent=`Item ${idx+1} of ${total}`;
+  $('dp-itemname').textContent='🗡️ '+d.items[idx];
+
+  const vtype=myName&&d.votes[myName]?.[idx]||'pass';
+  const typeLabel={need:'<span style="color:var(--need);font-weight:600">NEED</span>',greed:'<span style="color:var(--greed);font-weight:600">GREED</span>',pass:'<span style="color:var(--pass)">PASS</span>'};
+  $('dp-vote-label').innerHTML='Your vote: '+typeLabel[vtype];
+
+  if(vtype==='pass'&&!myRollSubmitted){
+    // Auto-mark pass, no button needed
+    $('dp-roll-wrap').style.display='none';
+    $('dp-roll-result').textContent='PASS';
+    $('dp-roll-result').style.color='var(--pass)';
+    $('dp-roll-result').style.display='block';
+    $('dp-roll-label2').textContent='You passed on this item';
+    $('dp-roll-label2').style.display='block';
+    myRollSubmitted=true;
+    api('POST','/session/'+sid+'/rollitem',{name:myName,itemIdx:idx});
+  }
+
+  // Show others' rolls
+  const ir=d.itemRolls&&d.itemRolls[idx];
+  const rolls=ir?ir.rolls:{};
+  const others=d.participants.filter(p=>p!==myName);
+  $('dp-others').innerHTML=others.map(p=>{
+    const r=rolls[p];
+    const rvtype=d.votes[p]?.[idx]||'pass';
+    const rollDisplay=r?(r.roll!==null?r.roll:'PASS'):'—';
+    return `<div class="roll-row">
+      <span class="pname">${p}</span>
+      <span class="vote-type ${rvtype}">${rvtype.toUpperCase()}</span>
+      <span class="roll-num ${r?'revealed':''}">${rollDisplay}</span>
+    </div>`;
+  }).join('');
+
+  // Winner (shown by GM via nextitem)
+  const winner=ir&&ir.winner;
+  if(winner){
+    $('dp-winner').style.display='block';
+    $('dp-wname').textContent='🏆 '+winner;
+    $('dp-witem').textContent='wins '+d.items[idx];
+    $('dp-waiting').style.display='block';
+  }
+}
+
+async function participantRoll(){
+  const btn=$('dp-roll-btn');
+  btn.disabled=true;
+
+  // Animate
+  let frames=0;
+  const anim=setInterval(()=>{
+    btn.textContent='🎲 '+Math.floor(Math.random()*100+1);
+    if(++frames>12)clearInterval(anim);
+  },60);
+
+  const r=await api('POST','/session/'+sid+'/rollitem',{name:myName,itemIdx:lastItemIdx});
+  clearInterval(anim);
+  myRollSubmitted=true;
+
+  const myRoll=r.rolls&&r.rolls[myName];
+  if(myRoll&&myRoll.roll!==null){
+    btn.parentElement.style.display='none';
+    $('dp-roll-result').textContent=myRoll.roll;
+    $('dp-roll-result').style.color='var(--gold-l)';
+    $('dp-roll-result').style.display='block';
+    $('dp-roll-label2').textContent='Your '+myRoll.type+' roll!';
+    $('dp-roll-label2').style.display='block';
+  }
+}
+
+// ── Results ───────────────────────────────────────────────────────────────────
 function renderResults(d){
   const {items,participants,results,rollLog}=d;
   $('item-results').innerHTML=items.map((item,i)=>{
@@ -333,13 +626,10 @@ function renderResults(d){
         ?`<span class="pl">${p}: PASS</span>`
         :`<span class="${r.type==='need'?'nl':'gl'}">${p}: ${r.roll} (${r.type.toUpperCase()})</span>`;
     }).filter(Boolean).join(' · ');
-    return `<div class="rc">
-      <div class="rhead">
-        <span class="rname">🗡️ ${item}</span>
-        <span style="font-size:13px;font-weight:600;color:${winner?'var(--gold)':'var(--pass)'}">${winner?'🏆 '+winner:'— No takers'}</span>
-      </div>
-      <div class="rrolls">${lines}</div>
-    </div>`;
+    return `<div class="rc"><div class="rhead">
+      <span class="rname">🗡️ ${item}</span>
+      <span style="font-size:13px;font-weight:600;color:${winner?'var(--gold)':'var(--pass)'}">${winner?'🏆 '+winner:'— No takers'}</span>
+    </div><div class="rrolls">${lines}</div></div>`;
   }).join('');
 
   $('final-results').innerHTML=participants.map(p=>{
@@ -347,10 +637,8 @@ function renderResults(d){
     return `<div class="rc">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
         <div class="avatar">${p[0].toUpperCase()}</div>
-        <div>
-          <div style="font-size:15px;color:var(--gold-l)">${p}</div>
-          <div style="font-size:12px;color:var(--muted)">${won.length} item${won.length!==1?'s':''} won</div>
-        </div>
+        <div><div style="font-size:15px;color:var(--gold-l)">${p}</div>
+        <div style="font-size:12px;color:var(--muted)">${won.length} item${won.length!==1?'s':''} won</div></div>
       </div>
       ${won.length?`<div class="won-items">${won.map(it=>`<span class="wi">${it}</span>`).join('')}</div>`:'<p class="no-items">No items this time</p>'}
     </div>`;
@@ -358,10 +646,13 @@ function renderResults(d){
 }
 
 function resetAll(){
-  items=[];parts=[];sid=null;myName=null;myVotes={};clearInterval(pollT);
+  items=[];parts=[];sid=null;myName=null;myVotes={};rollMode='quick';isGM=false;
+  myRollSubmitted=false;lastItemIdx=-1;sessionItems=[];
+  clearInterval(pollT);clearInterval(dramaticPollT);
   renderTags('item-tags',[],'items');renderTags('part-tags',[],'parts');
   $('jcode').value='';$('jerr').style.display='none';
   $('name-picker').style.display='none';$('vote-form').style.display='none';$('vote-done').style.display='none';
+  pickMode('quick');
   show('s-land');
 }
 </script>
