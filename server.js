@@ -99,18 +99,17 @@ async function handleAPI(req, res) {
     let id; do { id = genCode(); } while (sessions[id]);
     sessions[id] = {
       id,
-      items:        body.items.slice(0, 50),
-      participants: body.participants.slice(0, 30),
-      rollMode:     body.rollMode || 'quick',   // 'quick' | 'dramatic'
-      votes:        {},
-      resolved:     false,
-      // dramatic mode state
-      currentItem:  0,
-      itemRolls:    {},   // { itemIdx: { rolls, winner } }
-      // final results (set when all items done)
-      results:      null,
-      rollLog:      null,
-      createdAt:    Date.now(),
+      items:           body.items.slice(0, 50),
+      participants:    body.participants.slice(0, 30),
+      rollMode:        body.rollMode || 'quick',
+      votes:           {},
+      resolved:        false,
+      dramaticStarted: false,
+      currentItem:     0,
+      itemRolls:       {},
+      results:         null,
+      rollLog:         null,
+      createdAt:       Date.now(),
     };
     console.log(`[+] ${id} — ${body.rollMode} mode, ${body.items.length} items, ${body.participants.length} players`);
     return sendJSON(res, 200, { id });
@@ -135,6 +134,16 @@ async function handleAPI(req, res) {
     s.votes[body.name] = body.votes;
     console.log(`[v] ${body.name} voted in ${id} (${Object.keys(s.votes).length}/${s.participants.length})`);
     return sendJSON(res, 200, { ok: true });
+  }
+
+  // POST /api/session/:id/start — dramatic mode: GM signals rolling has begun
+  if (req.method === 'POST' && p.match(/^\/api\/session\/[A-Z0-9]{4,8}\/start$/)) {
+    const id = p.split('/')[3];
+    const s  = sessions[id];
+    if (!s) return sendJSON(res, 404, { error: 'Session not found' });
+    s.dramaticStarted = true;
+    console.log(`[>] ${id} dramatic roll started`);
+    return sendJSON(res, 200, s);
   }
 
   // POST /api/session/:id/resolve — quick mode: roll everything at once
