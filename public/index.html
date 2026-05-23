@@ -319,11 +319,9 @@ async function joinSession(){
   sid=code;isGM=false;
   if(data.resolved){renderResults(data);show('s-results');return;}
   // If dramatic roll already started, go to participant roll screen
-  if(data.rollMode==='dramatic'&&data.currentItem>0){
-    sessionItems=data.items;
-    rollMode=data.rollMode;
-    gotoParticipantDramatic(data);
-    return;
+  if(data.rollMode==='dramatic'&&data.dramaticStarted&&!data.resolved){
+    sessionItems=data.items;rollMode=data.rollMode;
+    gotoParticipantDramatic(data);return;
   }
   show('s-vote');
   initVoteScreen(data);
@@ -346,13 +344,13 @@ function startVotePoll(){
   pollT=setInterval(async()=>{
     if(!$('s-vote').classList.contains('active'))return;
     const d=await api('GET','/session/'+sid);
-    // Dramatic roll started while we're on vote-done screen
-    if(d.rollMode==='dramatic'&&d.currentItem>0&&$('vote-done').style.display!=='none'){
+    // GM started dramatic roll — send participant to roll screen
+    if(d.rollMode==='dramatic'&&d.dramaticStarted&&!d.resolved){
       clearInterval(pollT);sessionItems=d.items;rollMode=d.rollMode;
       gotoParticipantDramatic(d);return;
     }
     if(d.resolved){clearInterval(pollT);renderResults(d);show('s-results');}
-  },3000);
+  },2000);
 }
 
 function renderStatusList(d){
@@ -424,8 +422,9 @@ async function startRolling(){
     if(res.error){btn.disabled=false;btn.textContent='⚡ Quick Roll — Distribute All Loot';return alert(res.error);}
     renderResults(res);show('s-results');
   } else {
-    // Dramatic: push currentItem from 0 to 1 to signal start, then show GM dramatic screen
+    // Dramatic: signal start to server so participants get redirected, then show GM screen
     sessionItems=d.items;rollMode='dramatic';
+    await api('POST','/session/'+sid+'/start');
     renderDramaticGM(d);
     show('s-dramatic-gm');
     startDramaticPoll();
