@@ -383,6 +383,12 @@ async function joinSession(){
     gotoParticipantDramatic(data);return;
   }
   show('s-vote');initVoteScreen(data);startVotePoll();
+  // Also poll immediately once right away rather than waiting 1.5s
+  (async()=>{
+    const d=await api('GET','/session/'+sid);
+    if(d.dramaticStarted&&!d.resolved){clearInterval(votePollT);sessionItems=d.items;rollMode=d.rollMode;gotoParticipantDramatic(d);}
+    else if(d.resolved){clearInterval(votePollT);renderResults(d);show('s-results');}
+  })();
 }
 
 function startLobbyPoll(){
@@ -402,11 +408,13 @@ function startVotePoll(){
     let d;
     try{ d=await api('GET','/session/'+sid); }catch(e){return;}
     if(!d||d.error)return;
-    if(d.rollMode==='dramatic'&&d.dramaticStarted&&!d.resolved){
+    // Dramatic roll started — move to roll screen
+    if(d.dramaticStarted&&!d.resolved){
       clearInterval(votePollT);
       sessionItems=d.items;rollMode=d.rollMode;
       gotoParticipantDramatic(d);return;
     }
+    // Quick roll resolved — show results
     if(d.resolved){clearInterval(votePollT);renderResults(d);show('s-results');}
   },1500);
 }
@@ -469,6 +477,14 @@ function showDone(){
   $('vote-form').style.display='none';$('name-picker').style.display='none';$('vote-done').style.display='block';
   clearInterval(votePollT);
   startVotePoll();
+  // Check immediately without waiting for first interval tick
+  (async()=>{
+    let d;
+    try{ d=await api('GET','/session/'+sid); }catch(e){return;}
+    if(!d||d.error)return;
+    if(d.dramaticStarted&&!d.resolved){clearInterval(votePollT);sessionItems=d.items;rollMode=d.rollMode;gotoParticipantDramatic(d);}
+    else if(d.resolved){clearInterval(votePollT);renderResults(d);show('s-results');}
+  })();
 }
 
 async function startRolling(){
