@@ -261,7 +261,7 @@
   <div class="hdr"><div class="crown">⬡</div><h1>Loot Selection</h1><p class="sub" id="vote-sub">// Submit acquisition priorities</p></div>
   <div id="name-picker" style="display:none"><h2>// Identify Operative</h2><div id="name-opts"></div></div>
   <div id="vote-form" style="display:none">
-    <p style="font-size:12px;color:var(--muted);margin-bottom:14px;letter-spacing:1px;font-family:'Share Tech Mono',monospace">// Flag each item: ACQUIRE / SALVAGE / BYPASS</p>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px;letter-spacing:1px;font-family:'Share Tech Mono',monospace">// Flag each item: REQUIRE / COLLECT / UNWANTED</p>
     <div id="vote-items"></div>
     <button class="btn-p" id="submit-btn" onclick="submitVotes()">▶ Transmit Selections</button>
   </div>
@@ -450,9 +450,9 @@ function showVoteForm(itemList){
   $('vote-items').innerHTML=itemList.map((item,i)=>
     `<div class="vc"><span class="iname">◈ ${item}</span>
       <div class="vbtns">
-        <button class="vbtn need" onclick="sv(${i},'need',this)">Acquire</button>
-        <button class="vbtn greed" onclick="sv(${i},'greed',this)">Salvage</button>
-        <button class="vbtn pass" onclick="sv(${i},'pass',this)">Bypass</button>
+        <button class="vbtn need" onclick="sv(${i},'need',this)">Require</button>
+        <button class="vbtn greed" onclick="sv(${i},'greed',this)">Collect</button>
+        <button class="vbtn pass" onclick="sv(${i},'pass',this)">Unwanted</button>
       </div>
     </div>`
   ).join('');
@@ -530,13 +530,13 @@ function renderDramaticGM(d){
     const r=rolls[p];
     const isWinner=p===bestP&&bestP!==null;
     let rollDisplay,dimmed=false,vtypeLabel=vtype;
-    if(vtype==='pass'){rollDisplay='BYPASS';dimmed=true;}
+    if(vtype==='pass'){rollDisplay='UNWANTED';dimmed=true;}
     else if(!inPool){rollDisplay='—';dimmed=true;}
     else rollDisplay=r?(r.roll!==null?String(r.roll):'—'):'—';
     // Map internal types to display labels
-    if(vtype==='need')vtypeLabel='acquire';
-    if(vtype==='greed')vtypeLabel='salvage';
-    if(vtype==='pass')vtypeLabel='bypass';
+    if(vtype==='need')vtypeLabel='require';
+    if(vtype==='greed')vtypeLabel='collect';
+    if(vtype==='pass')vtypeLabel='unwanted';
     return `<div class="roll-row ${isWinner&&r?'winner-row':''}" ${dimmed?'style="opacity:.35"':''}>
       <span class="pname">${p}</span>
       <span class="vote-type ${vtype}">${vtypeLabel.toUpperCase()}</span>
@@ -550,7 +550,7 @@ function renderDramaticGM(d){
   if(winner){
     $('dgm-winner').style.display='block';
     $('dgm-wname').textContent=winner;
-    $('dgm-witem').textContent='// acquires: '+d.items[idx];
+    $('dgm-witem').textContent='// requires: '+d.items[idx];
     $('dgm-next-btn').style.display='block';
     $('dgm-next-btn').disabled=false;
     $('dgm-next-btn').textContent=idx+1<total?'▶ Next Target':'▶ Finalize & Show Results';
@@ -622,7 +622,7 @@ function updateParticipantDramatic(d){
   const inPool=pool.includes(myName);
 
   const typeColors={need:'var(--need)',greed:'var(--greed)',pass:'var(--muted)'};
-  const typeNames={need:'ACQUIRE',greed:'SALVAGE',pass:'BYPASS'};
+  const typeNames={need:'REQUIRE',greed:'COLLECT',pass:'UNWANTED'};
   $('dp-vote-label').innerHTML=`// Your priority: <span style="color:${typeColors[vtype]};font-weight:700">${typeNames[vtype]}</span>`;
 
   const ir=d.itemRolls&&d.itemRolls[sidx];
@@ -632,16 +632,16 @@ function updateParticipantDramatic(d){
     if(vtype==='pass'||!inPool){
       $('dp-roll-wrap').style.display='none';
       if(vtype==='pass'){
-        $('dp-roll-result').textContent='BYPASS';
+        $('dp-roll-result').textContent='UNWANTED';
         $('dp-roll-result').style.color='var(--muted)';
         $('dp-roll-result').style.fontSize='32px';
-        $('dp-roll-label2').textContent='// You bypassed this item';
+        $('dp-roll-label2').textContent='// You marked this item unwanted';
       }else{
         $('dp-roll-result').textContent='—';
         $('dp-roll-result').style.color='var(--muted)';
         $('dp-roll-result').style.fontSize='32px';
         $('dp-roll-label2').textContent=needers.length&&vtype==='greed'
-          ?'// Acquire priority detected — salvage roll not required'
+          ?'// Require priority detected — collect roll not required'
           :'// Not in active roll pool';
       }
       $('dp-roll-result').style.display='block';
@@ -662,15 +662,15 @@ function updateParticipantDramatic(d){
     const r=rolls[p];
     const pvtype=d.votes[p]?.[sidx]||'pass';
     const inOtherPool=pool.includes(p);
-    const vtypeLabel={need:'ACQUIRE',greed:'SALVAGE',pass:'BYPASS'}[pvtype]||pvtype.toUpperCase();
+    const vtypeLabel={need:'REQUIRE',greed:'COLLECT',pass:'UNWANTED'}[pvtype]||pvtype.toUpperCase();
     if(!inOtherPool&&pvtype!=='pass'){
       return `<div class="roll-row" style="opacity:.3">
         <span class="pname">${p}</span>
-        <span class="vote-type greed">SALVAGE</span>
+        <span class="vote-type greed">COLLECT</span>
         <span class="roll-num" style="font-size:12px;color:var(--muted)">not rolling</span>
       </div>`;
     }
-    const rollDisplay=r?(r.roll!==null?String(r.roll):'BYPASS'):(pvtype==='pass'?'BYPASS':'—');
+    const rollDisplay=r?(r.roll!==null?String(r.roll):'UNWANTED'):(pvtype==='pass'?'UNWANTED':'—');
     return `<div class="roll-row">
       <span class="pname">${p}</span>
       <span class="vote-type ${pvtype}">${vtypeLabel}</span>
@@ -682,7 +682,7 @@ function updateParticipantDramatic(d){
   if(winner){
     $('dp-winner').style.display='block';
     $('dp-wname').textContent=winner;
-    $('dp-witem').textContent='// acquires: '+d.items[idx];
+    $('dp-witem').textContent='// requires: '+d.items[idx];
     $('dp-waiting').style.display='block';
   }
 }
@@ -707,7 +707,7 @@ async function participantRoll(){
     $('dp-roll-result').style.color=isSolo?'var(--green)':'var(--cyan)';
     $('dp-roll-result').style.display='block';
     if(isSolo){
-      $('dp-roll-label2').textContent='// Uncontested — item acquired!';
+      $('dp-roll-label2').textContent='// Uncontested — item required!';
       $('dp-roll-label2').style.color='var(--green)';
     }else{
       $('dp-roll-label2').textContent=`// ${myRoll.type.toUpperCase()} roll transmitted`;
@@ -725,9 +725,9 @@ function renderResults(d){
     const winner=Object.keys(results||{}).find(p=>(results[p]||[]).includes(item));
     const lines=participants.map(p=>{
       const r=rolls[p];if(!r)return'';
-      if(r.type==='pass')return`<span class="pl">${p}: BYPASS</span>`;
+      if(r.type==='pass')return`<span class="pl">${p}: UNWANTED</span>`;
       if(r.type==='not-competing')return`<span class="pl">${p}: —</span>`;
-      return`<span class="${r.type==='need'?'nl':'gl'}">${p}: ${r.roll} (${r.type==='need'?'ACQUIRE':'SALVAGE'})</span>`;
+      return`<span class="${r.type==='need'?'nl':'gl'}">${p}: ${r.roll} (${r.type==='need'?'REQUIRE':'COLLECT'})</span>`;
     }).filter(Boolean).join(' · ');
     return`<div class="rc"><div class="rhead">
       <span class="rname">◈ ${item}</span>
@@ -743,7 +743,7 @@ function renderResults(d){
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
         <div class="avatar">${p[0].toUpperCase()}</div>
         <div><div style="font-size:19px;color:#c8d8e8;font-weight:700;letter-spacing:.5px">${p}</div>
-        <div style="font-size:14px;color:var(--muted);font-family:'Share Tech Mono',monospace">${won.length} item${won.length!==1?'s':''} acquired</div></div>
+        <div style="font-size:14px;color:var(--muted);font-family:'Share Tech Mono',monospace">${won.length} item${won.length!==1?'s':''} claimed</div></div>
       </div>
       ${won.length
         ?`<div class="won-items">${won.map(it=>`<span class="wi">◈ ${it}</span>`).join('')}</div>`
