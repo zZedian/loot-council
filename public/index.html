@@ -328,7 +328,7 @@
 
 <script>
 const $=id=>document.getElementById(id);
-let items=[],parts=[],sid=null,myName=null,myVotes={},pollT=null,rollMode='quick',sessionItems=[];
+let items=[],parts=[],sid=null,myName=null,myVotes={},pollT=null,votePollT=null,rollMode='quick',sessionItems=[];
 let isGM=false,dramaticPollT=null,myRollSubmitted=false,lastItemIdx=-1;
 
 const split=v=>v.split(',').map(s=>s.trim()).filter(Boolean);
@@ -396,19 +396,18 @@ function startLobbyPoll(){
 }
 
 function startVotePoll(){
-  clearInterval(pollT);
-  pollT=setInterval(async()=>{
-    // Keep polling as long as we're on the vote screen (includes vote-done state)
+  clearInterval(votePollT);
+  votePollT=setInterval(async()=>{
     if(!$('s-vote').classList.contains('active'))return;
     let d;
     try{ d=await api('GET','/session/'+sid); }catch(e){return;}
     if(!d||d.error)return;
     if(d.rollMode==='dramatic'&&d.dramaticStarted&&!d.resolved){
-      clearInterval(pollT);
+      clearInterval(votePollT);
       sessionItems=d.items;rollMode=d.rollMode;
       gotoParticipantDramatic(d);return;
     }
-    if(d.resolved){clearInterval(pollT);renderResults(d);show('s-results');}
+    if(d.resolved){clearInterval(votePollT);renderResults(d);show('s-results');}
   },1500);
 }
 
@@ -468,7 +467,7 @@ async function submitVotes(){
 
 function showDone(){
   $('vote-form').style.display='none';$('name-picker').style.display='none';$('vote-done').style.display='block';
-  // Restart poll to make sure we're watching for dramatic start / resolution
+  clearInterval(votePollT);
   startVotePoll();
 }
 
@@ -748,7 +747,7 @@ function renderResults(d){
 function resetAll(){
   items=[];parts=[];sid=null;myName=null;myVotes={};rollMode='quick';isGM=false;
   myRollSubmitted=false;lastItemIdx=-1;sessionItems=[];
-  clearInterval(pollT);clearInterval(dramaticPollT);
+  clearInterval(pollT);clearInterval(votePollT);clearInterval(dramaticPollT);
   renderTags('item-tags',[],'items');renderTags('part-tags',[],'parts');
   $('jcode').value='';$('jerr').style.display='none';
   $('name-picker').style.display='none';$('vote-form').style.display='none';$('vote-done').style.display='none';
