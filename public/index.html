@@ -475,8 +475,12 @@ async function startRolling(){
     renderResults(res);show('s-results');
   }else{
     sessionItems=d.items;rollMode='dramatic';
-    await api('POST','/session/'+sid+'/start');
-    renderDramaticGM(d);show('s-dramatic-gm');startDramaticPoll();
+    const started=await api('POST','/session/'+sid+'/start');
+    // Re-fetch so we have the fully fresh server state
+    const fresh=await api('GET','/session/'+sid);
+    renderDramaticGM(fresh);
+    show('s-dramatic-gm');
+    startDramaticPoll();
   }
 }
 
@@ -485,9 +489,10 @@ let dgmSession=null;
 
 function renderDramaticGM(d){
   dgmSession=d;
-  const idx=d.currentItem;
+  const idx=d.currentItem||0;
   const sidx=String(idx);
   const total=d.items.length;
+  const votes=d.votes||{};
 
   $('dgm-dots').innerHTML=d.items.map((_,i)=>
     `<div class="dot ${i<idx?'done':i===idx?'active':''}"></div>`).join('');
@@ -498,8 +503,8 @@ function renderDramaticGM(d){
   const ir=d.itemRolls&&d.itemRolls[sidx];
   const rolls=ir?ir.rolls:{};
 
-  const needers=d.participants.filter(p=>d.votes[p]?.[sidx]==='need');
-  const greeders=d.participants.filter(p=>d.votes[p]?.[sidx]==='greed');
+  const needers=d.participants.filter(p=>votes[p]?.[sidx]==='need');
+  const greeders=d.participants.filter(p=>votes[p]?.[sidx]==='greed');
   const pool=needers.length?needers:greeders;
 
   // Find current best for highlighting
@@ -507,7 +512,7 @@ function renderDramaticGM(d){
   pool.forEach(p=>{if(rolls[p]?.roll>best){best=rolls[p].roll;bestP=p;}});
 
   $('dgm-rolls').innerHTML=d.participants.map(p=>{
-    const vtype=d.votes[p]?.[sidx]||'pass';
+    const vtype=votes[p]?.[sidx]||'pass';
     const inPool=pool.includes(p);
     const r=rolls[p];
     const isWinner=p===bestP&&bestP!==null;
